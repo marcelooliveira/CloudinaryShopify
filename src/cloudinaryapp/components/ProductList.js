@@ -1,6 +1,6 @@
+import getConfig from 'next/config';
 import gql from 'graphql-tag';
-// import { useMutation } from '@apollo/client';
-import { Query, useMutation } from 'react-apollo';
+import { Query } from 'react-apollo';
 import {
   Card,
   ResourceList,
@@ -9,9 +9,11 @@ import {
   Thumbnail,
 } from '@shopify/polaris';
 
+const { publicRuntimeConfig } = getConfig();
+
 const GET_PRODUCTS = gql`
 {
-  products(first: 1) {
+  products(first: 100) {
     edges {
       node {
         id
@@ -39,85 +41,19 @@ const GET_PRODUCTS = gql`
 }
 `;
 
-// const CREATE_PRODUCT_MEDIA = gql`
-//   mutation createProductMedia(
-//     $id: ID!
-//     $media: [CreateMediaInput!]!
-//   ) {
-//     productCreateMedia(productId: $id, media: $media) {
-//       media {
-//         ... fieldsForMediaTypes
-//         mediaErrors {
-//           code
-//           details
-//           message
-//         }
-//       }
-//       product {
-//         id
-//       }
-//       mediaUserErrors {
-//         code
-//         field
-//         message
-//       }
-//     }
-//   }
-  
-//   fragment fieldsForMediaTypes on Media {
-//     alt
-//     mediaContentType
-//     preview {
-//       image {
-//         id
-//       }
-//     }
-//     status
-//     ... on Video {
-//       id
-//       sources {
-//         format
-//         height
-//         mimeType
-//         url
-//         width
-//       }
-//     }
-//     ... on ExternalVideo {
-//       id
-//       embeddedUrl
-//     }
-//     ... on Model3d {
-//       sources {
-//         format
-//         mimeType
-//         url
-//       }
-//     }
-//   }
-//   `;
-  
   const ResourceListWithProducts = () => {
-  
-  // const [createProductMedia, { createProductMediaData }] = useMutation(CREATE_PRODUCT_MEDIA);
   
   const uploadMediaClick = (productId) => {
     
     const productIdNumber = productId.split('/')[productId.split('/').length - 1];
 
     var myWidget = cloudinary.createUploadWidget({
-      cloudName: 'dthv50qgh',
-      upload_preset: 'ihfwipla',
-      showAdvancedOptions: true    
+      cloudName: publicRuntimeConfig.cloudinaryCloudName,
+      upload_preset: publicRuntimeConfig.cloudinaryUploadPreset,
+      showAdvancedOptions: true
     }, (error, result) => { if (result.event == "success") {
-      // var createMediaInputArray = [{
-      //   mediaContentType: 'EXTERNAL_VIDEO',
-      //   originalSource: result.info.secure_url
-      // }];
 
-      // var public_ids = [result.info.public_id];
-
-      // createProductMedia({ variables: { id: productId, media: createMediaInputArray } });
+      console.log(result.info);
     } })
 
     myWidget.update({tags: [productIdNumber]});
